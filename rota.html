@@ -113,15 +113,13 @@
                     if (status === google.maps.DirectionsStatus.OK) {
                         directionsRenderer.setOptions({ suppressMarkers: true });
 
-                        const destinationIcon = {
-                            url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-                            scaledSize: new google.maps.Size(40, 40)
-                        };
 
                         new google.maps.Marker({
                             position: result.routes[0].legs[0].end_location,
                             map: map,
-                            icon: destinationIcon
+                            icon: {
+                                url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
+                            }
                         });
 
                         directionsRenderer.setDirections(result);
