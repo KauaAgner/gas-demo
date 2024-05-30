@@ -120,7 +120,8 @@
 
                         new google.maps.Marker({
                             position: result.routes[0].legs[0].end_location,
-                            map: map
+                            map: map,
+                            icon: destinationIcon
                         });
 
                         directionsRenderer.setDirections(result);
@@ -158,18 +159,6 @@
             directionsService.route(request, function(result, status) {
                 if (status === google.maps.DirectionsStatus.OK) {
                     directionsRenderer.setOptions({ suppressMarkers: true });
-
-                    const destinationIcon = {
-                        url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-                        scaledSize: new google.maps.Size(40, 40)
-                    };
-
-                    new google.maps.Marker({
-                        position: result.routes[0].legs[0].end_location,
-                        map: map,
-                        icon: destinationIcon
-                    });
-
                     directionsRenderer.setDirections(result);
 
                     const nextRoutePoint = result.routes[0].legs[0].steps[0].end_location;
