@@ -4,15 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rota</title>
-    <link rel="stylesheet" href="navbar.css">
-    <link rel="stylesheet" href="rota.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/rota.css">
     <link rel="shortcut icon" href="img/logo branca.png" />
 </head>
 <body onload="initMap()">
 
     <main>
         <div id="map"></div>
-        <img id="map-logo" src="img/gasfinderlogo.png" alt="Logo">
+        <a href="gasfinder.html"><img id="map-logo" src="img/gasfinderlogo.png" alt="Logo"></a>
+        <div id="info">
+            <p id="distancia">Distância: --</p>
+            <p id="tempo-restante">Tempo estimado: --</p>
+        </div>
     </main>
     <div id="loading-screen"><div class="spinner"></div></div>
     <script src="stylemap.js"></script>
@@ -27,10 +31,13 @@
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: -19.912998, lng: -43.940933 },
-                zoom: 11,
+                zoom: 12,
                 styles: mapstyle,
                 streetViewControl: false,
-                mapTypeControl: false
+                mapTypeControl: false,
+                zoomControl: false, 
+                scrollwheel: true,  
+                gestureHandling: 'auto' 
             });
 
             directionsService = new google.maps.DirectionsService();
@@ -113,7 +120,6 @@
                     if (status === google.maps.DirectionsStatus.OK) {
                         directionsRenderer.setOptions({ suppressMarkers: true });
 
-
                         new google.maps.Marker({
                             position: result.routes[0].legs[0].end_location,
                             map: map,
@@ -140,6 +146,11 @@
 
                         // Esconder a tela de carregamento quando a rota for carregada
                         document.getElementById('loading-screen').style.display = 'none';
+
+                        // Exibir distância e tempo
+                        const leg = result.routes[0].legs[0];
+                        document.getElementById('distancia').textContent = `Distância: ${leg.distance.text}`;
+                        document.getElementById('tempo-restante').textContent = `Tempo estimado: ${leg.duration.text}`;
                     } else {
                         handleError('Não foi possível calcular a rota')(new Error(status));
                         document.getElementById('loading-screen').style.display = 'none';
@@ -157,7 +168,10 @@
 
             directionsService.route(request, function(result, status) {
                 if (status === google.maps.DirectionsStatus.OK) {
-                    directionsRenderer.setOptions({ suppressMarkers: true });
+                    directionsRenderer.setOptions({ 
+                        suppressMarkers: true,
+                        preserveViewport: true 
+                    });
                     directionsRenderer.setDirections(result);
 
                     const nextRoutePoint = result.routes[0].legs[0].steps[0].end_location;
@@ -172,6 +186,14 @@
                         strokeWeight: 2,
                         rotation: direction
                     });
+
+                    map.setCenter(userLatLng);
+                    map.setZoom(15);
+
+                    // Exibir distância e tempo
+                    const leg = result.routes[0].legs[0];
+                    document.getElementById('distancia').textContent = `Distância: ${leg.distance.text}`;
+                    document.getElementById('tempo-restante').textContent = `Tempo estimado: ${leg.duration.text}`;
                 } else {
                     handleError('Não foi possível recalcular a rota')(new Error(status));
                 }
